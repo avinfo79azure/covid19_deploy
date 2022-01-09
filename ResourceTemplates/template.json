@@ -2,42 +2,21 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "vulnerabilityAssessments_Default_storageContainerPath": {
-            "type": "SecureString"
-        },
-        "servers_covid19sqls_name": {
-            "defaultValue": "covid19sqls",
+        "storageAccounts_stacovid19_name": {
+            "defaultValue": "stacovid19",
             "type": "String"
         },
-        "storageAccounts_covid19draft_name": {
-            "defaultValue": "covid19draft",
-            "type": "String"
-        },
-        "storageAccounts_covid19draftdl2_name": {
-            "defaultValue": "covid19draftdl2",
+        "storageAccounts_stadlcovid19_name": {
+            "defaultValue": "stadlcovid19",
             "type": "String"
         }
     },
     "variables": {},
     "resources": [
         {
-            "type": "Microsoft.Sql/servers",
-            "apiVersion": "2021-05-01-preview",
-            "name": "[parameters('servers_covid19sqls_name')]",
-            "location": "eastus",
-            "kind": "v12.0",
-            "properties": {
-                "administratorLogin": "adm",
-                "version": "12.0",
-                "minimalTlsVersion": "1.2",
-                "publicNetworkAccess": "Enabled",
-                "restrictOutboundNetworkAccess": "Disabled"
-            }
-        },
-        {
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2021-06-01",
-            "name": "[parameters('storageAccounts_covid19draft_name')]",
+            "name": "[parameters('storageAccounts_stacovid19_name')]",
             "location": "eastus",
             "sku": {
                 "name": "Standard_LRS",
@@ -46,7 +25,7 @@
             "kind": "StorageV2",
             "properties": {
                 "defaultToOAuthAuthentication": false,
-                "allowCrossTenantReplication": true,
+                "allowCrossTenantReplication": false,
                 "minimumTlsVersion": "TLS1_2",
                 "allowBlobPublicAccess": true,
                 "allowSharedKeyAccess": true,
@@ -76,7 +55,7 @@
         {
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2021-06-01",
-            "name": "[parameters('storageAccounts_covid19draftdl2_name')]",
+            "name": "[parameters('storageAccounts_stadlcovid19_name')]",
             "location": "eastus",
             "sku": {
                 "name": "Standard_LRS",
@@ -114,337 +93,11 @@
             }
         },
         {
-            "type": "Microsoft.Sql/servers/advisors",
-            "apiVersion": "2014-04-01",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/CreateIndex')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "autoExecuteValue": "Disabled"
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/advisors",
-            "apiVersion": "2014-04-01",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/DbParameterization')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "autoExecuteValue": "Disabled"
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/advisors",
-            "apiVersion": "2014-04-01",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/DefragmentIndex')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "autoExecuteValue": "Disabled"
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/advisors",
-            "apiVersion": "2014-04-01",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/DropIndex')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "autoExecuteValue": "Disabled"
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/advisors",
-            "apiVersion": "2014-04-01",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/ForceLastGoodPlan')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "autoExecuteValue": "Enabled"
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/auditingPolicies",
-            "apiVersion": "2014-04-01",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/Default')]",
-            "location": "East US",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "auditingState": "Disabled"
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/auditingSettings",
-            "apiVersion": "2021-05-01-preview",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/Default')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "retentionDays": 0,
-                "auditActionsAndGroups": [],
-                "isStorageSecondaryKeyInUse": false,
-                "isAzureMonitorTargetEnabled": false,
-                "state": "Disabled",
-                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/connectionPolicies",
-            "apiVersion": "2021-05-01-preview",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/default')]",
-            "location": "eastus",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "connectionType": "Default"
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/databases",
-            "apiVersion": "2021-05-01-preview",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/covid19sqldb')]",
-            "location": "eastus",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "sku": {
-                "name": "Standard",
-                "tier": "Standard",
-                "capacity": 10
-            },
-            "kind": "v12.0,user",
-            "properties": {
-                "collation": "SQL_Latin1_General_CP1_CI_AS",
-                "maxSizeBytes": 268435456000,
-                "catalogCollation": "SQL_Latin1_General_CP1_CI_AS",
-                "zoneRedundant": false,
-                "readScale": "Disabled",
-                "requestedBackupStorageRedundancy": "Local",
-                "maintenanceConfigurationId": "/subscriptions/0f39574d-d756-48cf-b622-0e27a6943bd2/providers/Microsoft.Maintenance/publicMaintenanceConfigurations/SQL_Default",
-                "isLedgerOn": false
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/databases/auditingPolicies",
-            "apiVersion": "2014-04-01",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/master/Default')]",
-            "location": "East US",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "auditingState": "Disabled"
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/databases/auditingSettings",
-            "apiVersion": "2021-05-01-preview",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/master/Default')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "retentionDays": 0,
-                "isAzureMonitorTargetEnabled": false,
-                "state": "Disabled",
-                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/databases/extendedAuditingSettings",
-            "apiVersion": "2021-05-01-preview",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/master/Default')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "retentionDays": 0,
-                "isAzureMonitorTargetEnabled": false,
-                "state": "Disabled",
-                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/databases/geoBackupPolicies",
-            "apiVersion": "2014-04-01",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/master/Default')]",
-            "location": "East US",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "state": "Disabled"
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/databases/ledgerDigestUploads",
-            "apiVersion": "2021-05-01-preview",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/master/Current')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {}
-        },
-        {
-            "type": "Microsoft.Sql/servers/databases/securityAlertPolicies",
-            "apiVersion": "2021-05-01-preview",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/master/Default')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "state": "Disabled",
-                "disabledAlerts": [
-                    ""
-                ],
-                "emailAddresses": [
-                    ""
-                ],
-                "emailAccountAdmins": false,
-                "retentionDays": 0
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/databases/transparentDataEncryption",
-            "apiVersion": "2021-05-01-preview",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/master/Current')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "state": "Disabled"
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/databases/vulnerabilityAssessments",
-            "apiVersion": "2021-05-01-preview",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/master/Default')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "recurringScans": {
-                    "isEnabled": false,
-                    "emailSubscriptionAdmins": true
-                }
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/devOpsAuditingSettings",
-            "apiVersion": "2021-05-01-preview",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/Default')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "isAzureMonitorTargetEnabled": false,
-                "state": "Disabled",
-                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/encryptionProtector",
-            "apiVersion": "2021-05-01-preview",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/current')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "kind": "servicemanaged",
-            "properties": {
-                "serverKeyName": "ServiceManaged",
-                "serverKeyType": "ServiceManaged",
-                "autoRotationEnabled": false
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/extendedAuditingSettings",
-            "apiVersion": "2021-05-01-preview",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/Default')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "retentionDays": 0,
-                "auditActionsAndGroups": [],
-                "isStorageSecondaryKeyInUse": false,
-                "isAzureMonitorTargetEnabled": false,
-                "state": "Disabled",
-                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/firewallRules",
-            "apiVersion": "2021-05-01-preview",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/AllowAllWindowsAzureIps')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "startIpAddress": "0.0.0.0",
-                "endIpAddress": "0.0.0.0"
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/keys",
-            "apiVersion": "2021-05-01-preview",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/ServiceManaged')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "kind": "servicemanaged",
-            "properties": {
-                "serverKeyType": "ServiceManaged"
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/securityAlertPolicies",
-            "apiVersion": "2021-05-01-preview",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/Default')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "state": "Disabled",
-                "disabledAlerts": [
-                    ""
-                ],
-                "emailAddresses": [
-                    ""
-                ],
-                "emailAccountAdmins": false,
-                "retentionDays": 0
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/vulnerabilityAssessments",
-            "apiVersion": "2021-05-01-preview",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/Default')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "recurringScans": {
-                    "isEnabled": false,
-                    "emailSubscriptionAdmins": true
-                },
-                "storageContainerPath": "[parameters('vulnerabilityAssessments_Default_storageContainerPath')]"
-            }
-        },
-        {
             "type": "Microsoft.Storage/storageAccounts/blobServices",
             "apiVersion": "2021-06-01",
-            "name": "[concat(parameters('storageAccounts_covid19draft_name'), '/default')]",
+            "name": "[concat(parameters('storageAccounts_stacovid19_name'), '/default')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_covid19draft_name'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_stacovid19_name'))]"
             ],
             "sku": {
                 "name": "Standard_LRS",
@@ -458,15 +111,13 @@
                     "enabled": false
                 },
                 "containerDeleteRetentionPolicy": {
-                    "enabled": true,
-                    "days": 7
+                    "enabled": false
                 },
                 "cors": {
                     "corsRules": []
                 },
                 "deleteRetentionPolicy": {
-                    "enabled": true,
-                    "days": 7
+                    "enabled": false
                 },
                 "isVersioningEnabled": false
             }
@@ -474,9 +125,9 @@
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices",
             "apiVersion": "2021-06-01",
-            "name": "[concat(parameters('storageAccounts_covid19draftdl2_name'), '/default')]",
+            "name": "[concat(parameters('storageAccounts_stadlcovid19_name'), '/default')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_covid19draftdl2_name'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_stadlcovid19_name'))]"
             ],
             "sku": {
                 "name": "Standard_LRS",
@@ -499,9 +150,9 @@
         {
             "type": "Microsoft.Storage/storageAccounts/fileServices",
             "apiVersion": "2021-06-01",
-            "name": "[concat(parameters('storageAccounts_covid19draft_name'), '/default')]",
+            "name": "[concat(parameters('storageAccounts_stacovid19_name'), '/default')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_covid19draft_name'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_stacovid19_name'))]"
             ],
             "sku": {
                 "name": "Standard_LRS",
@@ -515,17 +166,17 @@
                     "corsRules": []
                 },
                 "shareDeleteRetentionPolicy": {
-                    "enabled": true,
-                    "days": 7
+                    "enabled": false,
+                    "days": 0
                 }
             }
         },
         {
             "type": "Microsoft.Storage/storageAccounts/fileServices",
             "apiVersion": "2021-06-01",
-            "name": "[concat(parameters('storageAccounts_covid19draftdl2_name'), '/default')]",
+            "name": "[concat(parameters('storageAccounts_stadlcovid19_name'), '/default')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_covid19draftdl2_name'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_stadlcovid19_name'))]"
             ],
             "sku": {
                 "name": "Standard_LRS",
@@ -547,9 +198,9 @@
         {
             "type": "Microsoft.Storage/storageAccounts/queueServices",
             "apiVersion": "2021-06-01",
-            "name": "[concat(parameters('storageAccounts_covid19draft_name'), '/default')]",
+            "name": "[concat(parameters('storageAccounts_stacovid19_name'), '/default')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_covid19draft_name'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_stacovid19_name'))]"
             ],
             "properties": {
                 "cors": {
@@ -560,9 +211,9 @@
         {
             "type": "Microsoft.Storage/storageAccounts/queueServices",
             "apiVersion": "2021-06-01",
-            "name": "[concat(parameters('storageAccounts_covid19draftdl2_name'), '/default')]",
+            "name": "[concat(parameters('storageAccounts_stadlcovid19_name'), '/default')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_covid19draftdl2_name'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_stadlcovid19_name'))]"
             ],
             "properties": {
                 "cors": {
@@ -573,9 +224,9 @@
         {
             "type": "Microsoft.Storage/storageAccounts/tableServices",
             "apiVersion": "2021-06-01",
-            "name": "[concat(parameters('storageAccounts_covid19draft_name'), '/default')]",
+            "name": "[concat(parameters('storageAccounts_stacovid19_name'), '/default')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_covid19draft_name'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_stacovid19_name'))]"
             ],
             "properties": {
                 "cors": {
@@ -586,249 +237,14 @@
         {
             "type": "Microsoft.Storage/storageAccounts/tableServices",
             "apiVersion": "2021-06-01",
-            "name": "[concat(parameters('storageAccounts_covid19draftdl2_name'), '/default')]",
+            "name": "[concat(parameters('storageAccounts_stadlcovid19_name'), '/default')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_covid19draftdl2_name'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_stadlcovid19_name'))]"
             ],
             "properties": {
                 "cors": {
                     "corsRules": []
                 }
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/databases/advisors",
-            "apiVersion": "2014-04-01",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/covid19sqldb/CreateIndex')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_covid19sqls_name'), 'covid19sqldb')]",
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "autoExecuteValue": "Disabled"
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/databases/advisors",
-            "apiVersion": "2014-04-01",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/covid19sqldb/DbParameterization')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_covid19sqls_name'), 'covid19sqldb')]",
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "autoExecuteValue": "Disabled"
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/databases/advisors",
-            "apiVersion": "2014-04-01",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/covid19sqldb/DefragmentIndex')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_covid19sqls_name'), 'covid19sqldb')]",
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "autoExecuteValue": "Disabled"
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/databases/advisors",
-            "apiVersion": "2014-04-01",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/covid19sqldb/DropIndex')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_covid19sqls_name'), 'covid19sqldb')]",
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "autoExecuteValue": "Disabled"
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/databases/advisors",
-            "apiVersion": "2014-04-01",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/covid19sqldb/ForceLastGoodPlan')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_covid19sqls_name'), 'covid19sqldb')]",
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "autoExecuteValue": "Enabled"
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/databases/auditingPolicies",
-            "apiVersion": "2014-04-01",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/covid19sqldb/Default')]",
-            "location": "East US",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_covid19sqls_name'), 'covid19sqldb')]",
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "auditingState": "Disabled"
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/databases/auditingSettings",
-            "apiVersion": "2021-05-01-preview",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/covid19sqldb/Default')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_covid19sqls_name'), 'covid19sqldb')]",
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "retentionDays": 0,
-                "isAzureMonitorTargetEnabled": false,
-                "state": "Disabled",
-                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/databases/backupLongTermRetentionPolicies",
-            "apiVersion": "2021-05-01-preview",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/covid19sqldb/default')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_covid19sqls_name'), 'covid19sqldb')]",
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "weeklyRetention": "PT0S",
-                "monthlyRetention": "PT0S",
-                "yearlyRetention": "PT0S",
-                "weekOfYear": 0
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/databases/backupShortTermRetentionPolicies",
-            "apiVersion": "2021-05-01-preview",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/covid19sqldb/default')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_covid19sqls_name'), 'covid19sqldb')]",
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "retentionDays": 7,
-                "diffBackupIntervalInHours": 24
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/databases/extendedAuditingSettings",
-            "apiVersion": "2021-05-01-preview",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/covid19sqldb/Default')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_covid19sqls_name'), 'covid19sqldb')]",
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "retentionDays": 0,
-                "isAzureMonitorTargetEnabled": false,
-                "state": "Disabled",
-                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/databases/geoBackupPolicies",
-            "apiVersion": "2014-04-01",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/covid19sqldb/Default')]",
-            "location": "East US",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_covid19sqls_name'), 'covid19sqldb')]",
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "state": "Disabled"
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/databases/ledgerDigestUploads",
-            "apiVersion": "2021-05-01-preview",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/covid19sqldb/Current')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_covid19sqls_name'), 'covid19sqldb')]",
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {}
-        },
-        {
-            "type": "Microsoft.Sql/servers/databases/securityAlertPolicies",
-            "apiVersion": "2021-05-01-preview",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/covid19sqldb/Default')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_covid19sqls_name'), 'covid19sqldb')]",
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "state": "Disabled",
-                "disabledAlerts": [
-                    ""
-                ],
-                "emailAddresses": [
-                    ""
-                ],
-                "emailAccountAdmins": false,
-                "retentionDays": 0
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/databases/transparentDataEncryption",
-            "apiVersion": "2021-05-01-preview",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/covid19sqldb/Current')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_covid19sqls_name'), 'covid19sqldb')]",
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "state": "Enabled"
-            }
-        },
-        {
-            "type": "Microsoft.Sql/servers/databases/vulnerabilityAssessments",
-            "apiVersion": "2021-05-01-preview",
-            "name": "[concat(parameters('servers_covid19sqls_name'), '/covid19sqldb/Default')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_covid19sqls_name'), 'covid19sqldb')]",
-                "[resourceId('Microsoft.Sql/servers', parameters('servers_covid19sqls_name'))]"
-            ],
-            "properties": {
-                "recurringScans": {
-                    "isEnabled": false,
-                    "emailSubscriptionAdmins": true
-                }
-            }
-        },
-        {
-            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
-            "apiVersion": "2021-06-01",
-            "name": "[concat(parameters('storageAccounts_covid19draft_name'), '/default/covid')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccounts_covid19draft_name'), 'default')]",
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_covid19draft_name'))]"
-            ],
-            "properties": {
-                "immutableStorageWithVersioning": {
-                    "enabled": false
-                },
-                "defaultEncryptionScope": "$account-encryption-key",
-                "denyEncryptionScopeOverride": false,
-                "publicAccess": "None"
-            }
-        },
-        {
-            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
-            "apiVersion": "2021-06-01",
-            "name": "[concat(parameters('storageAccounts_covid19draftdl2_name'), '/default/covid19dl2')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccounts_covid19draftdl2_name'), 'default')]",
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_covid19draftdl2_name'))]"
-            ],
-            "properties": {
-                "immutableStorageWithVersioning": {
-                    "enabled": false
-                },
-                "defaultEncryptionScope": "$account-encryption-key",
-                "denyEncryptionScopeOverride": false,
-                "publicAccess": "None"
             }
         }
     ]

@@ -2,16 +2,10 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "vulnerabilityAssessments_Default_storageContainerPath": {
+        "storageAccounts_stacovid19_name": {
             "value": null
         },
-        "servers_covid19sqls_name": {
-            "value": null
-        },
-        "storageAccounts_covid19draft_name": {
-            "value": null
-        },
-        "storageAccounts_covid19draftdl2_name": {
+        "storageAccounts_stadlcovid19_name": {
             "value": null
         }
     }
